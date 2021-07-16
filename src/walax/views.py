@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from rest_framework import viewsets, permissions
-from .serializers import WalaxModelSerializer
 from rest_framework.response import Response
+from .serializers import WalaxModelSerializer
+from .metadata import WalaxModelMetadata
 
 class WalaxModelViewSet(viewsets.ModelViewSet):
+    metadata_class = WalaxModelMetadata
 
     def list(self, request):
         filters = {}
@@ -11,8 +13,7 @@ class WalaxModelViewSet(viewsets.ModelViewSet):
             if k in ['format','_limit','_offset']: continue
             filters[k] = v
         filters = self.validate_filters(filters)
-        self.queryset = self.queryset.filter(**filters)
-        ret = super().list(self, request)
+        queryset = self.queryset.filter(**filters)
         # if '_limit' in request.GET:
         #     limit = int(request.GET['_limit']) \
         #         if '_limit' in request.GET else 0
@@ -20,7 +21,13 @@ class WalaxModelViewSet(viewsets.ModelViewSet):
         #         if '_offset' in request.GET else 0
         #     print (limit, offset)
         #     ret = ret[offset:offset+limit]
-        return ret
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def validate_filters(self, filters):
         return filters

@@ -3,7 +3,7 @@ from rest_framework import serializers
 from .models import *
 
 
-class WalaxModelSerializer(serializers.HyperlinkedModelSerializer):
+class WalaxModelSerializer(serializers.ModelSerializer):
     def create(self, data):
         return self.Meta.model.objects.create(**data)
 
