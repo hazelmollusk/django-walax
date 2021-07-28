@@ -25,7 +25,7 @@ var Stores = observable({
         })
     },
     oninit: function() { Stores.loadList() },
-    view: function () {
+    view: function (v) {
         w.log.info('STORES VIEW', Stores, Stores.list)
         return m('ul', Stores.list.map(s => {
             console.log(s)
@@ -51,7 +51,7 @@ var Stores = observable({
                     value:'Submit change',
                     hidden:true,
                     type:'submit',
-                    onclick:()=>{
+                    onclick:() => {
                         s.save().then(x => {
                             Stores.loadList().then(xx => {
                                 document.getElementById(`storeSubmit${s.id}`).hidden=true
@@ -66,12 +66,10 @@ var Stores = observable({
     },
     async start() {
         Stores.loadList()
-        await w.sleep(1000)
         var e = document.getElementById('stores')
         m.mount(e, Stores)
 
     }
 })
-w.obj.load(prop, url)
+w.obj.load(prop, url).then(Stores.start)
 window.Stores = Stores
-Stores.start()
