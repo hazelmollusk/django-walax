@@ -1,11 +1,16 @@
 from django.urls import include, path
 from rest_framework.schemas import get_schema_view
 from rest_framework import routers, serializers, viewsets
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 
 from .views import WalaxModelViewSet
 
-class WalaxRouter(routers.DefaultRouter):
 
+class WalaxRouter(routers.DefaultRouter):
     def __init__(self):
         super().__init__()
         self.models = []
@@ -17,7 +22,7 @@ class WalaxRouter(routers.DefaultRouter):
         if not view:
             view = WalaxModelViewSet.for_model(model)
         # fixme
-        modelSlug = model._meta.verbose_name.replace(' ', '_')
+        modelSlug = model._meta.verbose_name.replace(" ", "_")
 
         self.register(modelSlug, view)
 
@@ -27,8 +32,19 @@ class WalaxRouter(routers.DefaultRouter):
     @property
     def urls(self):
         urlpatterns = [
-            path('models/', include(super().urls)),
+            path("models/", include(super().urls)),
         ]
         for url, view in self.views.items():
             urlpatterns.append(path(url, view))
+
+        for p in [
+            path(
+                "auth/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"
+            ),
+            path(
+                "auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"
+            ),
+        ]:
+            urlpatterns.append(p)
+
         return urlpatterns
