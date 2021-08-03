@@ -6,8 +6,7 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
-
-from .views import WalaxModelViewSet
+from .views import WalaxModelViewSet, CurrentUserViewSet
 
 
 class WalaxRouter(routers.DefaultRouter):
@@ -39,11 +38,21 @@ class WalaxRouter(routers.DefaultRouter):
 
         for p in [
             path(
+                r"auth/user",
+                CurrentUserViewSet.as_view({"get": "user"}),
+                name="current_user",
+            ),
+            path(
                 "auth/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"
             ),
             path(
                 "auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"
             ),
+            # path(
+            #     "auth/user/",
+            #     CurrentUserViewSet.as_view({"get": "user"}),
+            #     name="current_user",
+            # ),
         ]:
             urlpatterns.append(p)
 
