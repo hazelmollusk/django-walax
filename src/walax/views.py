@@ -1,11 +1,11 @@
 from django.shortcuts import render
-from .serializers import WalaxModelSerializer
-from .metadata import WalaxModelMetadata
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from rest_framework.decorators import action
 from rest_framework import viewsets, permissions
 from rest_framework.response import Response
+from .serializers import WalaxModelSerializer
+from .metadata import WalaxModelMetadata
 
 USER = get_user_model()
 

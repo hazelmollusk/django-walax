@@ -9,7 +9,7 @@ from walax.routers import WalaxRouter
 from .models import *
 
 router = WalaxRouter()
-for model in [Player]:
+for model in [Store, Band, Album]:
     router.register_model(model)
 
 urlpatterns = [

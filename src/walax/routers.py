@@ -36,17 +36,19 @@ class WalaxRouter(routers.DefaultRouter):
         for url, view in self.views.items():
             urlpatterns.append(path(url, view))
 
+        # add auth urls
+        #   these can be broken into subrouters if needed :wq
         for p in [
             path(
-                r"auth/user",
+                r"auth/user/",
                 CurrentUserViewSet.as_view({"get": "user"}),
                 name="current_user",
             ),
             path(
-                "auth/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"
+                r"auth/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"
             ),
             path(
-                "auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"
+                r"auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"
             ),
             # path(
             #     "auth/user/",
