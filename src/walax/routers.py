@@ -4,6 +4,7 @@ from rest_framework import routers, serializers, viewsets
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
+    TokenVerifyView
 )
 
 from .views import WalaxModelViewSet, CurrentUserViewSet
@@ -49,6 +50,9 @@ class WalaxRouter(routers.DefaultRouter):
             ),
             path(
                 r"auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"
+            ),
+            path(
+                r"auth/token/verify/", TokenVerifyView.as_view(), name="token_refresh"
             ),
             # path(
             #     "auth/user/",
