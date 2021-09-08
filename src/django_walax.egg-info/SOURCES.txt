@@ -1,7 +1,6 @@
 LICENSE
 README.md
 pyproject.toml
-setup.cfg
 setup.py
 src/django_walax.egg-info/PKG-INFO
 src/django_walax.egg-info/SOURCES.txt
@@ -10,6 +9,7 @@ src/django_walax.egg-info/top_level.txt
 src/walax/__init__.py
 src/walax/admin.py
 src/walax/apps.py
+src/walax/metadata.py
 src/walax/models.py
 src/walax/routers.py
 src/walax/serializers.py

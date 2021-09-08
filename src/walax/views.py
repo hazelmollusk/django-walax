@@ -29,6 +29,11 @@ class CurrentUserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
+class ModelActionViewSet(viewsets.ViewSet):
+    def call(self, request):
+        return Response({'asdf': 'qwer'})
+
+
 class WalaxModelViewSet(viewsets.ModelViewSet):
     metadata_class = WalaxModelMetadata
 

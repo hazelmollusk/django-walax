@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="django-walax",
-    version="0.1.3",
+    version="0.1.4",
     author="Matt Barry",
     author_email="matt@hazelmollusk.org",
     description="Walax Django API",
