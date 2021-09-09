@@ -6,6 +6,8 @@ from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 from .serializers import WalaxModelSerializer
 from .metadata import WalaxModelMetadata
+import inspect
+from pprint import pp
 
 USER = get_user_model()
 
@@ -23,15 +25,9 @@ class CurrentUserViewSet(viewsets.ModelViewSet):
     def user(self, request):
         user = request.user
         if type(user) == AnonymousUser:
-            print("anonymous")
             return Response(None)
         serializer = self.get_serializer(user, many=False)
         return Response(serializer.data)
-
-
-class ModelActionViewSet(viewsets.ViewSet):
-    def call(self, request):
-        return Response({'asdf': 'qwer'})
 
 
 class WalaxModelViewSet(viewsets.ModelViewSet):
@@ -64,6 +60,22 @@ class WalaxModelViewSet(viewsets.ModelViewSet):
         return filters
 
     @staticmethod
+    def get_f(f, fn):
+        from functools import wraps
+
+        @action(detail=True, methods={'GET', 'POST'})
+        @wraps(f)
+        def callFunc(self, request, pk, fname=fn):
+            obj = self.queryset.get(pk=pk)
+            ff = getattr(obj, fname, lambda r: 1)
+            pp({'o': obj, 'fn': fname, 'f': ff})
+            # ret = ff(request)
+            ret = fn
+
+            return Response(ret)
+        return callFunc
+
+    @staticmethod
     def for_model(modelo, serializer=None):
 
         if not serializer:
@@ -79,5 +91,14 @@ class WalaxModelViewSet(viewsets.ModelViewSet):
             serializer_class = aWalaxModelSerializer
             queryset = modelo.objects.all()
             permission_classes = [permissions.AllowAny]
+
+        funcs = inspect.getmembers(modelo, predicate=inspect.isfunction)
+        pp(modelo._meta.verbose_name)
+        for fname, func in funcs:
+            from copy import copy
+            if getattr(func, 'walax_action', False):
+                pp({'found ': str(fname), 'func': func})
+                setattr(aWalaxModelViewSet, fname,
+                        WalaxModelViewSet.get_f(func, fname))
 
         return aWalaxModelViewSet
