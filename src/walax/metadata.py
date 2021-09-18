@@ -54,14 +54,31 @@ class WalaxModelMetadata(BaseMetadata):
         metadata["renders"] = [
             renderer.media_type for renderer in view.renderer_classes
         ]
-        metadata["parses"] = [parser.media_type for parser in view.parser_classes]
+        metadata["parses"] = [
+            parser.media_type for parser in view.parser_classes]
         metadata["model"] = view.queryset.model.__name__
         self.model = view.queryset.model
+        metadata['extra_actions'] = self.determine_extra_actions(request, view)
+
         if hasattr(view, "get_serializer"):
             actions = self.determine_actions(request, view)
             if actions:
                 metadata["actions"] = actions
         return metadata
+
+    def determine_extra_actions(self, request, view):
+        """
+        Return list of extra callable actions
+        """
+        import inspect
+        actions = []
+        for fn, f in [(fn, f) for (fn, f) in inspect.getmembers(self.model) if inspect.isfunction(f) and getattr(f, 'walax_action', False)]:
+            actions.append({
+                'method': 'post',
+                'type': 'instance',
+                'name': fn
+            })
+        return actions
 
     def determine_actions(self, request, view):
         """
@@ -87,7 +104,6 @@ class WalaxModelMetadata(BaseMetadata):
                 actions[method] = self.get_serializer_info(serializer)
             finally:
                 view.request = request
-
         return actions
 
     def get_serializer_info(self, serializer):

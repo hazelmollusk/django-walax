@@ -70,7 +70,7 @@ class WalaxModelViewSet(viewsets.ModelViewSet):
             ff = getattr(obj, fname, lambda r: 1)
             pp({'o': obj, 'fn': fname, 'f': ff})
             # ret = ff(request)
-            ret = fn
+            ret = ff(request)
 
             return Response(ret)
         return callFunc
