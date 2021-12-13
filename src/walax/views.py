@@ -60,7 +60,7 @@ class WalaxModelViewSet(viewsets.ModelViewSet):
         return filters
 
     @staticmethod
-    def get_f(f, fn):
+    def get_object_method(f, fn):
         from functools import wraps
 
         @action(detail=True, methods={'GET', 'POST'})
@@ -68,8 +68,7 @@ class WalaxModelViewSet(viewsets.ModelViewSet):
         def callFunc(self, request, pk, fname=fn):
             obj = self.queryset.get(pk=pk)
             ff = getattr(obj, fname, lambda r: 1)
-            pp({'o': obj, 'fn': fname, 'f': ff})
-            # ret = ff(request)
+            # pp({'o': obj, 'fn': fname, 'f': ff})
             ret = ff(request)
 
             return Response(ret)
@@ -93,12 +92,10 @@ class WalaxModelViewSet(viewsets.ModelViewSet):
             permission_classes = [permissions.AllowAny]
 
         funcs = inspect.getmembers(modelo, predicate=inspect.isfunction)
-        pp(modelo._meta.verbose_name)
         for fname, func in funcs:
             from copy import copy
             if getattr(func, 'walax_action', False):
-                pp({'found ': str(fname), 'func': func})
                 setattr(aWalaxModelViewSet, fname,
-                        WalaxModelViewSet.get_f(func, fname))
+                        WalaxModelViewSet.get_object_method(func, fname))
 
         return aWalaxModelViewSet
