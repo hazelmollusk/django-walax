@@ -1,1 +1,1 @@
-import admin, apps, decorators, metadata, models, routers, serializers, views
+#import admin, apps, decorators, metadata, models, routers, serializers, views
